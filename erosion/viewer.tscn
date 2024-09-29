@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://5tcgp4mpx62o"]
+
+[ext_resource type="Script" path="res://erosion/erosion_texture2d.gd" id="1_jdsm7"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_klht6"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nvi1f"]
+noise = SubResource("FastNoiseLite_klht6")
+
+[sub_resource type="Texture2D" id="Texture2D_q3pu0"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("1_jdsm7")
+texture = SubResource("NoiseTexture2D_nvi1f")
+
+[node name="Viewer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("Texture2D_q3pu0")

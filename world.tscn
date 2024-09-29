@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://ch2b1uisvfrgl"]
+
+[ext_resource type="Script" path="res://stuff/base.gd" id="1_tu1pb"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wig2c"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_7d8f0"]
+sky_material = SubResource("ProceduralSkyMaterial_wig2c")
+
+[sub_resource type="Environment" id="Environment_wjblg"]
+background_mode = 2
+sky = SubResource("Sky_7d8f0")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="World" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wjblg")
+
+[node name="TerrainGenerator" type="Node3D" parent="."]
+script = ExtResource("1_tu1pb")
