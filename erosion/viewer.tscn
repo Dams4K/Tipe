@@ -2,16 +2,21 @@
 
 [ext_resource type="Script" path="res://erosion/erosion_texture2d.gd" id="1_jdsm7"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_klht6"]
+[sub_resource type="Gradient" id="Gradient_28w0u"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nvi1f"]
-noise = SubResource("FastNoiseLite_klht6")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ss1qx"]
+gradient = SubResource("Gradient_28w0u")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 1)
+metadata/_snap_enabled = true
 
 [sub_resource type="Texture2D" id="Texture2D_q3pu0"]
 resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("1_jdsm7")
-texture = SubResource("NoiseTexture2D_nvi1f")
+base_texture = SubResource("GradientTexture2D_ss1qx")
 
 [node name="Viewer" type="Control"]
 layout_mode = 3
