@@ -2,9 +2,6 @@
 extends Texture2D
 class_name ErosionTexture2D
 
-@export_tool_button("Emit change") var emit_change_btn = emit_changed
-@export_tool_button("Next step") var next_step_button = func(): move_particle(current_pt, current_image)
-
 
 @export var base_texture: Texture2D :
 	set(v):
@@ -16,9 +13,15 @@ var texture: Texture2D
 var current_pt := Particle.new()
 var current_image: Image
 
+func next():
+	move_particle(current_pt, current_image)
+
 #region Particle class
 class Particle extends Object:
-	var pos := Vector2.ZERO
+	var pos := Vector2(
+		randf(),
+		randf()
+	)
 	## Should always be normalized
 	var dir := Vector2.ZERO
 	
@@ -59,16 +62,22 @@ func get_gradient(pt: Particle, image: Image) -> Vector2:
 	var Pxy1: float =  image.get_pixelv(pixel_pos + Vector2i.DOWN  * int(not bottom_edge)).r
 	var Px1y1: float = image.get_pixelv(pixel_pos + Vector2i.ONE   * int(not (right_edge or bottom_edge))).r
 	
+	print("----")
+	printt(image.get_pixelv(pixel_pos), image.get_pixelv(pixel_pos).to_html(false))
+	printt(Pxy, Px1y)
+	printt(Pxy1, Px1y1)
+	#printt(pixel_pos, pixel_pos + Vector2i.RIGHT * int(not right_edge))
+	#printt(pixel_pos + Vector2i.DOWN  * int(not bottom_edge), pixel_pos + Vector2i.ONE   * int(not (right_edge or bottom_edge)))
+	
 	# u = uv.x
 	# v = uv.y
 	# values between [0, 1[
 	var uv: Vector2 = pt.pos - Vector2(pixel_pos)
-	
 	var g = Vector2(
 		(Px1y - Pxy) * (1 - uv.y) + (Px1y1 - Pxy1) * uv.y,
 		(Pxy1 - Pxy) * (1 - uv.x) + (Px1y1 - Px1y) * uv.x
 	)
-	printt("g:", g)
+	printt("g: ", g, "uv: ", uv)
 	return g
 
 func move_particle(pt: Particle, image: Image):
@@ -80,25 +89,28 @@ func move_particle(pt: Particle, image: Image):
 	var h_old = get_image_height(pt.get_pixel_pos(), image)
 	
 	var g := get_gradient(pt, image)
-	var dir_new := pt.dir * pt.inertia - g * (1 - pt.inertia)
-	
+	#var dir_new := pt.dir * pt.inertia - g * (1 - pt.inertia)
+	var dir_new := - g * (1 - pt.inertia)
 	pt.dir = dir_new
 	pt.move(image)
 	
 	#WARNING: DEBUG
-	print(pt.pos)
-	current_image.set_pixelv(pt.pos, Color.RED)
+	current_image.set_pixelv(pt.pos, current_image.get_pixelv(pt.pos) + Color.GREEN * 0.2)
 	current_image.save_png("res://debug.png")
 	
 	var h_new = get_image_height(pt.get_pixel_pos(), image)
 	
 	var h_dif = h_new - h_old
-	
+	print("Height diff: ", h_dif)
 	## h_dif > 0: the new pos is higher, sediment has been dropped at the old pos
 	## h_dif < 0: the carry capacity c must be calculated
 	
 	if h_dif < 0:
 		var c = max(-h_dif, pt.p_min_slope) * pt.water * pt.p_capacity
+	
+	
+	texture = ImageTexture.create_from_image(image)
+	emit_changed()
 
 func get_image_height(pos: Vector2i, image: Image)  -> float:
 	return image.get_pixelv(pos).r
