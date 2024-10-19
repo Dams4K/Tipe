@@ -25,7 +25,7 @@ class Particle extends Object:
 	## Value between 0 and 1.[br]
 	## I mean the gradient will be ignored[br]
 	## 0 mean the previous direction will be ignored
-	var inertia := 0.4
+	var inertia := 0.0
 	
 	## water stored
 	var water: float = 0.0
@@ -64,10 +64,12 @@ func get_gradient(pt: Particle, image: Image) -> Vector2:
 	# values between [0, 1[
 	var uv: Vector2 = pt.pos - Vector2(pixel_pos)
 	
-	return Vector2(
+	var g = Vector2(
 		(Px1y - Pxy) * (1 - uv.y) + (Px1y1 - Pxy1) * uv.y,
 		(Pxy1 - Pxy) * (1 - uv.x) + (Px1y1 - Px1y) * uv.x
 	)
+	printt("g:", g)
+	return g
 
 func move_particle(pt: Particle, image: Image):
 	# WARNING: DEBUG
