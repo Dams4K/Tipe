@@ -24,24 +24,29 @@ class Particle extends Object:
 	)
 	## Should always be normalized
 	var dir := Vector2.ZERO
+	var velocity: float = 1.0
+	var gravity: float = 9.8
 	
 	## Value between 0 and 1.[br]
 	## I mean the gradient will be ignored[br]
 	## 0 mean the previous direction will be ignored
-	var inertia := 0.0
+	var inertia := 0.3
 	
 	## water stored
-	var water: float = 0.0
+	var water: float = 1.0
+	var evaporation: float = 0.05
 	## setiment stored
 	var sediment: float = 0.0
 	## Used to prevent the capacity from falling to 0[br]
 	## => allow erosion on flatter terrain
-	var p_min_slope: float = 0.5
+	var min_slope: float = 0.5
 	
-	var p_capacity: float = 1.0
+	var capacity: float = 1.0
+	var erosion: float = 0.3
+	var deposition: float = 0.3
 	
 	func move(image: Image) -> void:
-		pos = (pos + dir.normalized()).clamp(Vector2.ZERO, image.get_size())
+		pos = (pos + dir.normalized()).clamp(Vector2.ZERO, image.get_size()-Vector2i.ONE)
 	
 	func get_pixel_pos() -> Vector2i:
 		return Vector2i(pos)
@@ -62,13 +67,6 @@ func get_gradient(pt: Particle, image: Image) -> Vector2:
 	var Pxy1: float =  image.get_pixelv(pixel_pos + Vector2i.DOWN  * int(not bottom_edge)).r
 	var Px1y1: float = image.get_pixelv(pixel_pos + Vector2i.ONE   * int(not (right_edge or bottom_edge))).r
 	
-	print("----")
-	printt(image.get_pixelv(pixel_pos), image.get_pixelv(pixel_pos).to_html(false))
-	printt(Pxy, Px1y)
-	printt(Pxy1, Px1y1)
-	#printt(pixel_pos, pixel_pos + Vector2i.RIGHT * int(not right_edge))
-	#printt(pixel_pos + Vector2i.DOWN  * int(not bottom_edge), pixel_pos + Vector2i.ONE   * int(not (right_edge or bottom_edge)))
-	
 	# u = uv.x
 	# v = uv.y
 	# values between [0, 1[
@@ -77,7 +75,7 @@ func get_gradient(pt: Particle, image: Image) -> Vector2:
 		(Px1y - Pxy) * (1 - uv.y) + (Px1y1 - Pxy1) * uv.y,
 		(Pxy1 - Pxy) * (1 - uv.x) + (Px1y1 - Px1y) * uv.x
 	)
-	printt("g: ", g, "uv: ", uv)
+	
 	return g
 
 func move_particle(pt: Particle, image: Image):
@@ -86,34 +84,61 @@ func move_particle(pt: Particle, image: Image):
 		current_image = base_texture.get_image()
 		image = current_image
 	
+	var pos_old = pt.pos
 	var h_old = get_image_height(pt.get_pixel_pos(), image)
 	
 	var g := get_gradient(pt, image)
-	#var dir_new := pt.dir * pt.inertia - g * (1 - pt.inertia)
-	var dir_new := - g * (1 - pt.inertia)
+	var dir_new := pt.dir * pt.inertia - g * (1 - pt.inertia)
 	pt.dir = dir_new
 	pt.move(image)
 	
 	#WARNING: DEBUG
-	current_image.set_pixelv(pt.pos, current_image.get_pixelv(pt.pos) + Color.GREEN * 0.2)
-	current_image.save_png("res://debug.png")
+	#current_image.set_pixelv(pt.pos, current_image.get_pixelv(pt.pos) + Color.GREEN * 0.2)
+	#current_image.save_png("res://debug.png")
 	
 	var h_new = get_image_height(pt.get_pixel_pos(), image)
 	
 	var h_dif = h_new - h_old
-	print("Height diff: ", h_dif)
-	## h_dif > 0: the new pos is higher, sediment has been dropped at the old pos
-	## h_dif < 0: the carry capacity c must be calculated
+	#print("Height diff: ", h_dif)
+	## h_dif > 0: the new pos is higher, sediment must be dropped at the old pos
+	## h_dif < 0: we erode
 	
-	if h_dif < 0:
-		var c = max(-h_dif, pt.p_min_slope) * pt.water * pt.p_capacity
+	var c = max(-h_dif, pt.min_slope) * pt.water * pt.capacity * pt.velocity
 	
+	if h_dif > 0 or pt.sediment > c:
+		var amount_to_depose: float = min(h_dif, pt.sediment) if h_dif > 0 else (pt.sediment - c) * pt.deposition
+		pt.sediment -= amount_to_depose
+		
+		depose(amount_to_depose, pos_old, image)
+	else:
+		# amount can't be higher than -h_dif else it will dig hole
+		var amount_to_erode: float = min(-h_dif, (c-pt.sediment) * pt.erosion)
+		erode(amount_to_erode, pos_old, image)
+	
+	pt.velocity = sqrt(pt.velocity**2 + h_dif*pt.gravity)
+	pt.water *= (1 - pt.evaporation)
 	
 	texture = ImageTexture.create_from_image(image)
 	emit_changed()
 
 func get_image_height(pos: Vector2i, image: Image)  -> float:
 	return image.get_pixelv(pos).r
+
+func depose(amount: float, at: Vector2, image: Image) -> void:
+	var pixel_pos := Vector2i(at)
+	#var offset: Vector2 = at - Vector2(pixel_pos)
+	prints("amount deposed:", amount)
+	var c := image.get_pixelv(pixel_pos)
+	c.r += amount
+	image.set_pixelv(pixel_pos, c)
+
+func erode(amount: float, at: Vector2, image: Image) -> void:
+	var pixel_pos := Vector2i(at)
+	prints("amount eroded:", amount)
+	var c := image.get_pixelv(pixel_pos)
+	c.r -= amount
+	image.set_pixelv(pixel_pos, c)
+
 #endregion
 
 
