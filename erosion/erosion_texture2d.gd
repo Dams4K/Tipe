@@ -8,6 +8,8 @@ class_name ErosionTexture2D
 		base_texture = v
 		texture = base_texture
 
+@export var radius := 2.0
+
 var texture: Texture2D
 
 var current_pt := Particle.new()
@@ -133,11 +135,48 @@ func depose(amount: float, at: Vector2, image: Image) -> void:
 	image.set_pixelv(pixel_pos, c)
 
 func erode(amount: float, at: Vector2, image: Image) -> void:
-	var pixel_pos := Vector2i(at)
-	prints("amount eroded:", amount)
-	var c := image.get_pixelv(pixel_pos)
-	c.r -= amount
-	image.set_pixelv(pixel_pos, c)
+	var at_i := Vector2i(at)
+	for offset in brush_weights.keys():
+		var pos := Vector2i(offset) + at_i
+		if pos.x < 0 or pos.y < 0 or pos.x >= image.get_width() or pos.y >= image.get_height():
+			continue
+		
+		var c := image.get_pixelv(pos)
+		var weighed_amount = min(amount * brush_weights[offset], c.r)
+		c.r -= weighed_amount
+		current_pt.sediment += weighed_amount
+		image.set_pixelv(pos, c)
+	
+	#prints("amount eroded:", amount)
+	#var c := image.get_pixelv(pixel_pos)
+	#c.r -= amount
+	#image.set_pixelv(pixel_pos, c)
+
+## keys: offsets
+## values: weights
+var brush_weights: Dictionary = generate_weights()
+
+func generate_weights() -> Dictionary:
+	var weights := {}
+	
+	var weight_sum = 0
+	
+	for j in range(-radius, radius+1):
+		for i in range(-radius, radius+1):
+			var pos := Vector2i(i, j)
+			var sqr_dist := pos.length_squared()
+			if sqr_dist > radius**2: # outside the circle
+				continue
+			
+			var weight := 1 - sqrt(sqr_dist) / radius
+			weight_sum += weight
+			weights[pos] = weight
+	
+	var calculated_weights := {}
+	for pos in weights:
+		calculated_weights[pos] = weights[pos] / weight_sum * 10
+	
+	return calculated_weights
 
 #endregion
 

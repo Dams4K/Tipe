@@ -9,6 +9,7 @@ resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("2_ufhgh")
 base_texture = ExtResource("2_m6reh")
+radius = 4.0
 
 [node name="Viewer" type="HBoxContainer"]
 anchors_preset = 15
