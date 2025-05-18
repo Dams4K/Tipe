@@ -2,11 +2,14 @@
 class_name TerrainGenerator
 extends Node3D
 
+@export_tool_button("generate") var g = create_terrain
+
 @export_custom(PROPERTY_HINT_LINK, "suffix:m") var size: Vector2i = Vector2i(10, 10):
 	set = set_size
 #@export_custom(PROPERTY_HINT_NONE, "suffix:m") var resolution := 1.0
 
 @export var height_map: Texture2D
+@export var factor := 5.0
 
 var mesh_instance: MeshInstance3D
 
@@ -43,7 +46,25 @@ func generate_terrain() -> ArrayMesh:
 	mdt.create_from_surface(arr_mesh, 0)
 
 	# Add height
-	#TODO
+	if height_map != null:
+	
+		if height_map is ErosionTexture2D:
+			for i in range(10_0):
+				print(height_map.current_pt.pos)
+				for j in range(30):
+					height_map.next()
+				height_map.next_particle()
+		
+		height_map.get_image().save_png("res://result.png")
+		
+		for i in range(mdt.get_vertex_count()):
+			var pos = mdt.get_vertex(i)
+			
+			var v = height_map.get_image().get_pixel(int(pos.x + size.x/2), int(pos.z + size.y/2)).r
+			pos.y = v * factor
+			
+			mdt.set_vertex(i, pos)
+			
 	
 	# Apply modifications to the ArrayMesh
 	arr_mesh.clear_surfaces()
@@ -52,6 +73,7 @@ func generate_terrain() -> ArrayMesh:
 	return arr_mesh
 
 func create_terrain():
+	mesh_instance.mesh = null
 	var terrain := generate_terrain()
 	mesh_instance.mesh = terrain
 

@@ -1,15 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://5tcgp4mpx62o"]
+[gd_scene load_steps=6 format=3 uid="uid://5tcgp4mpx62o"]
 
-[ext_resource type="Script" path="res://erosion/viewer.gd" id="1_h4grq"]
-[ext_resource type="Texture2D" uid="uid://cx76kl6at0tp1" path="res://image.png" id="2_m6reh"]
-[ext_resource type="Script" path="res://erosion/erosion_texture2d.gd" id="2_ufhgh"]
+[ext_resource type="Script" uid="uid://dhqownlj4ecdc" path="res://erosion/viewer.gd" id="1_h4grq"]
+[ext_resource type="Script" uid="uid://d0jm3j6pmsrfp" path="res://erosion/erosion_texture2d.gd" id="2_ufhgh"]
+
+[sub_resource type="Gradient" id="Gradient_6xiyk"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7wm4a"]
+gradient = SubResource("Gradient_6xiyk")
+fill_from = Vector2(1, 0)
+fill_to = Vector2(0, 0)
 
 [sub_resource type="Texture2D" id="Texture2D_03l6a"]
 resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("2_ufhgh")
-base_texture = ExtResource("2_m6reh")
-radius = 4.0
+base_texture = SubResource("GradientTexture2D_7wm4a")
+radius = 2.0
 
 [node name="Viewer" type="HBoxContainer"]
 anchors_preset = 15
@@ -34,4 +40,14 @@ size_flags_stretch_ratio = 0.4
 layout_mode = 2
 text = "Next"
 
+[node name="NextPTButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Next PT"
+
+[node name="StartButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Start"
+
 [connection signal="pressed" from="VBoxContainer/NextButton" to="." method="_on_next_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/NextPTButton" to="." method="_on_next_pt_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]

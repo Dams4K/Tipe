@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://ch2b1uisvfrgl"]
+[gd_scene load_steps=9 format=3 uid="uid://ch2b1uisvfrgl"]
 
-[ext_resource type="Script" path="res://stuff/base.gd" id="1_tu1pb"]
+[ext_resource type="Script" uid="uid://73i8ob0axn86" path="res://stuff/base.gd" id="1_tu1pb"]
+[ext_resource type="Script" uid="uid://d0jm3j6pmsrfp" path="res://erosion/erosion_texture2d.gd" id="2_fj7yv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wig2c"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -15,6 +16,25 @@ sky = SubResource("Sky_7d8f0")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="Gradient" id="Gradient_f3sb7"]
+interpolation_mode = 2
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_fj7yv"]
+gradient = SubResource("Gradient_f3sb7")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+metadata/_snap_enabled = true
+
+[sub_resource type="Texture2D" id="Texture2D_tlwt5"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("2_fj7yv")
+base_texture = SubResource("GradientTexture2D_fj7yv")
+radius = 1.0
+metadata/_custom_type_script = ExtResource("2_fj7yv")
+
 [node name="World" type="Node3D"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -26,3 +46,5 @@ environment = SubResource("Environment_wjblg")
 
 [node name="TerrainGenerator" type="Node3D" parent="."]
 script = ExtResource("1_tu1pb")
+size = Vector2i(63, 63)
+height_map = SubResource("Texture2D_tlwt5")

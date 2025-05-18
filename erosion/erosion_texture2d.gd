@@ -16,7 +16,18 @@ var current_pt := Particle.new()
 var current_image: Image
 
 func next():
+	if brush_weights.is_empty():
+		brush_weights = generate_weights()
 	move_particle(current_pt, current_image)
+
+func next_particle():
+	if current_image == null:
+		current_image = base_texture.get_image()
+	current_pt = Particle.new()
+	current_pt.pos = Vector2(
+		randf_range(0, current_image.get_size().x-1),
+		randf_range(0, current_image.get_size().y-1),
+	)
 
 #region Particle class
 class Particle extends Object:
@@ -129,7 +140,7 @@ func get_image_height(pos: Vector2i, image: Image)  -> float:
 func depose(amount: float, at: Vector2, image: Image) -> void:
 	var pixel_pos := Vector2i(at)
 	#var offset: Vector2 = at - Vector2(pixel_pos)
-	prints("amount deposed:", amount)
+	#prints("amount deposed:", amount)
 	var c := image.get_pixelv(pixel_pos)
 	c.r += amount
 	image.set_pixelv(pixel_pos, c)
@@ -154,11 +165,10 @@ func erode(amount: float, at: Vector2, image: Image) -> void:
 
 ## keys: offsets
 ## values: weights
-var brush_weights: Dictionary = generate_weights()
+var brush_weights: Dictionary = {}
 
 func generate_weights() -> Dictionary:
 	var weights := {}
-	
 	var weight_sum = 0
 	
 	for j in range(-radius, radius+1):
@@ -228,3 +238,6 @@ func _draw_rect_region(to_canvas_item, rect, src_rect, modulate, transpose, clip
 func _get_rid():
 	texture.get_rid()
 #endregion
+
+func get_image2():
+	return current_image
