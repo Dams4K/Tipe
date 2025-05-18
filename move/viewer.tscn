@@ -3,27 +3,23 @@
 [ext_resource type="Script" uid="uid://b1wv0d5umfkew" path="res://move/viewer.gd" id="1_pr5dc"]
 [ext_resource type="Script" uid="uid://cyrd3ld6bnjje" path="res://move/canvas.gd" id="2_44i43"]
 
-[sub_resource type="Gradient" id="Gradient_ou7mo"]
-offsets = PackedFloat32Array(0, 0.480519, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1)
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_44i43"]
+frequency = 0.021
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_pr5dc"]
-gradient = SubResource("Gradient_ou7mo")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_47aj1"]
 width = 96
 height = 54
-fill_from = Vector2(0, 0.5)
-fill_to = Vector2(1, 0.5)
-metadata/_snap_enabled = true
+noise = SubResource("FastNoiseLite_44i43")
 
 [node name="Viewer" type="Node2D"]
 script = ExtResource("1_pr5dc")
 
 [node name="Canvas" type="Sprite2D" parent="." node_paths=PackedStringArray("timer", "movements")]
-texture = SubResource("GradientTexture2D_pr5dc")
 centered = false
 script = ExtResource("2_44i43")
 timer = NodePath("../Timer")
 movements = NodePath("../Movements")
+base_texture = SubResource("NoiseTexture2D_47aj1")
 
 [node name="Movements" type="Sprite2D" parent="."]
 visible = false
