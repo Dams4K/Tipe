@@ -11,7 +11,8 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1)
 gradient = SubResource("Gradient_ou7mo")
 width = 96
 height = 54
-fill_to = Vector2(1, 1)
+fill_from = Vector2(0, 0.5)
+fill_to = Vector2(1, 0.5)
 metadata/_snap_enabled = true
 
 [node name="Viewer" type="Node2D"]

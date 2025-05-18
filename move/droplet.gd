@@ -47,9 +47,11 @@ func update():
 	var new_height = image.get_pixelv(position).r
 	var delta_height = new_height - old_height
 	
+	if old_position == position:
+		return false
+	
 	if delta_height > 0.0:
-		print("depose")
-		depose(0.0, old_position)
+		depose(0.04, old_position)
 	else:
 		erode(0.01, old_position)
 	
