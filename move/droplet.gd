@@ -16,12 +16,12 @@ var gravity: float = 9.8
 var min_slope: float = 0.5
 
 var sediment: float = 0.0
-var capacity: float = 1.0
-var erosion: float = 0.3
-var deposition: float = 0.3
+var capacity: float = 0.3
+var erosion: float = 0.02
+var deposition: float = 0.02
 
-var water: float = 1.0
-var evaporation: float = 0.05
+var water: float = 0.6
+var evaporation: float = 0.005
 
 var iteration := 0
 

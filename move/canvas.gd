@@ -24,7 +24,7 @@ func _input(event: InputEvent) -> void:
 		droplets.append(droplet)
 	
 	if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed:
-		for i in range(1_000):
+		for i in range(10_000):
 			var rx = randf_range(1.0, base_texture.get_width()-1.0)
 			var ry = randf_range(1.0, base_texture.get_height()-1.0)
 			var droplet = Droplet.new(Vector2(rx, ry))
