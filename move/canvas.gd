@@ -16,7 +16,15 @@ func _ready() -> void:
 	Droplet.image = base_texture.get_image()
 	movements.texture = movements_image_texture
 	
-	timer.timeout.connect(update)
+	Droplet.generate_weights(0)
+	
+	#timer.timeout.connect(update)
+	
+	for i in range(300_000):
+		var rx = randf_range(1.0, base_texture.get_width()-1.0)
+		var ry = randf_range(1.0, base_texture.get_height()-1.0)
+		var droplet = Droplet.new(Vector2(rx, ry))
+		droplets.append(droplet)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -30,12 +38,21 @@ func _input(event: InputEvent) -> void:
 			var droplet = Droplet.new(Vector2(rx, ry))
 			droplets.append(droplet)
 
+func _process(delta: float) -> void:
+	update()
+
 func update():
+	var q = len(droplets)
+	if q != 0:
+		print("Amount of droplets: %s" % q)
+	
 	var droplets_alive: Array[Droplet] = []
 	for droplet: Droplet in droplets:
 		var is_alive = droplet.update()
 		if is_alive:
 			droplets_alive.append(droplet)
+	
+	droplets = droplets_alive
 	
 	movements.texture = ImageTexture.create_from_image(Droplet.movements_image)
 	texture = ImageTexture.create_from_image(Droplet.image)

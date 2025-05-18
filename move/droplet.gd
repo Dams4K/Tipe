@@ -1,7 +1,7 @@
 extends Object
 class_name Droplet
 
-const MAX_ITERATIONS := 50
+const MAX_ITERATIONS := 6
 
 static var movements_image: Image
 static var image: Image
@@ -17,16 +17,47 @@ var min_slope: float = 0.5
 
 var sediment: float = 0.0
 var capacity: float = 0.3
-var erosion: float = 0.02
-var deposition: float = 0.02
+var erosion: float = 0.03
+var deposition: float = 0.03
 
 var water: float = 0.6
 var evaporation: float = 0.005
 
+var radius: int = 1
+
 var iteration := 0
+
+static var brush_weights: Dictionary = {}
+
+static func generate_weights(radius: int):
+	print("Start generating")
+	var weights := {}
+	var weight_sum = 0
+	
+	for j in range(-radius, radius+1):
+		for i in range(-radius, radius+1):
+			var pos := Vector2i(i, j)
+			var sqr_dist := pos.length_squared()
+			if sqr_dist > radius**2: # outside the circle
+				continue
+			
+			var weight := 1 - sqrt(sqr_dist) / (radius+1)
+			
+			weight_sum += weight
+			weights[pos] = weight
+	
+	var calculated_weights := {}
+	for pos in weights:
+		calculated_weights[pos] = weights[pos] / weight_sum
+	
+	Droplet.brush_weights = calculated_weights
+	print(Droplet.brush_weights)
+	print("Generated")
 
 func _init(position: Vector2):
 	self.position = position
+	if brush_weights.is_empty():
+		Droplet.generate_weights(radius)
 
 func move():
 	movements_image.set_pixelv(position, Color(.0, .0, .0 ,.0))
@@ -91,10 +122,23 @@ func update():
 	return true
 
 func erode(amount: float, old_position: Vector2):
-	var previous_amount = image.get_pixelv(old_position).r
-	var eroded_amount = max(0.0, previous_amount - amount)
+	var i_old_position := Vector2i(old_position)
+	for offset in brush_weights.keys():
+		var position := Vector2i(offset) + i_old_position
+		if position.x < 0 or position.y < 0 or position.x >= image.get_width() or position.y >= image.get_height():
+			continue
+		
+		var color := image.get_pixelv(position)
+		var weighed_amount = min(amount * brush_weights[offset], color.r)
+		
+		color -= Color(weighed_amount, weighed_amount, weighed_amount)
+		sediment += weighed_amount
+		image.set_pixelv(position, color)
 	
-	image.set_pixelv(old_position, Color(eroded_amount, eroded_amount, eroded_amount))
+	#var previous_amount = image.get_pixelv(old_position).r
+	#var eroded_amount = max(0.0, previous_amount - amount)
+	#
+	#image.set_pixelv(old_position, Color(eroded_amount, eroded_amount, eroded_amount))
 
 func depose(amount: float, old_position: Vector2):
 	var previous_amount = image.get_pixelv(old_position).r
