@@ -89,6 +89,8 @@ func get_gradient(pt: Particle, image: Image) -> Vector2:
 		(Pxy1 - Pxy) * (1 - uv.x) + (Px1y1 - Px1y) * uv.x
 	)
 	
+	#printt(Pxy, Pxy1, Pxy == Pxy1)
+	
 	return g
 
 func move_particle(pt: Particle, image: Image):
@@ -101,7 +103,9 @@ func move_particle(pt: Particle, image: Image):
 	var h_old = get_image_height(pt.get_pixel_pos(), image)
 	
 	var g := get_gradient(pt, image)
+	#print(g)
 	var dir_new := pt.dir * pt.inertia - g * (1 - pt.inertia)
+	
 	pt.dir = dir_new
 	pt.move(image)
 	
@@ -118,8 +122,11 @@ func move_particle(pt: Particle, image: Image):
 	
 	var c = max(-h_dif, pt.min_slope) * pt.water * pt.capacity * pt.velocity
 	
-	if h_dif > 0 or pt.sediment > c:
+	printt(pt.sediment, h_dif, c, pt.velocity)
+	
+	if h_dif >= 0 or pt.sediment > c:
 		var amount_to_depose: float = min(h_dif, pt.sediment) if h_dif > 0 else (pt.sediment - c) * pt.deposition
+		printt(amount_to_depose, min(h_dif, pt.sediment), (pt.sediment - c) * pt.deposition)
 		pt.sediment -= amount_to_depose
 		
 		depose(amount_to_depose, pos_old, image)
@@ -128,7 +135,7 @@ func move_particle(pt: Particle, image: Image):
 		var amount_to_erode: float = min(-h_dif, (c-pt.sediment) * pt.erosion)
 		erode(amount_to_erode, pos_old, image)
 	
-	pt.velocity = sqrt(pt.velocity**2 + h_dif*pt.gravity)
+	pt.velocity = sqrt(max(0, pt.velocity**2 - h_dif*pt.gravity))
 	pt.water *= (1 - pt.evaporation)
 	
 	texture = ImageTexture.create_from_image(image)
@@ -138,6 +145,7 @@ func get_image_height(pos: Vector2i, image: Image)  -> float:
 	return image.get_pixelv(pos).r
 
 func depose(amount: float, at: Vector2, image: Image) -> void:
+	print("depose")
 	var pixel_pos := Vector2i(at)
 	#var offset: Vector2 = at - Vector2(pixel_pos)
 	#prints("amount deposed:", amount)
@@ -146,6 +154,7 @@ func depose(amount: float, at: Vector2, image: Image) -> void:
 	image.set_pixelv(pixel_pos, c)
 
 func erode(amount: float, at: Vector2, image: Image) -> void:
+	print("erode")
 	var at_i := Vector2i(at)
 	for offset in brush_weights.keys():
 		var pos := Vector2i(offset) + at_i

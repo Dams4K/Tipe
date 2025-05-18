@@ -7,15 +7,18 @@
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_7wm4a"]
 gradient = SubResource("Gradient_6xiyk")
+width = 16
+height = 16
 fill_from = Vector2(1, 0)
 fill_to = Vector2(0, 0)
+metadata/_snap_enabled = true
 
 [sub_resource type="Texture2D" id="Texture2D_03l6a"]
 resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("2_ufhgh")
 base_texture = SubResource("GradientTexture2D_7wm4a")
-radius = 2.0
+radius = 1.0
 
 [node name="Viewer" type="HBoxContainer"]
 anchors_preset = 15

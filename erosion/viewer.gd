@@ -2,9 +2,13 @@ extends HBoxContainer
 
 @onready var erosion_texture: TextureRect = $ErosionTexture
 
+func _ready() -> void:
+	erosion_texture.texture.current_pt.pos = Vector2i(0, 15)
+	pass
+
 func _on_next_button_pressed() -> void:
 	erosion_texture.texture.next()
-	print(erosion_texture.texture.current_pt.pos)
+	#print(erosion_texture.texture.current_pt.pos)
 
 
 func _on_start_button_pressed() -> void:
