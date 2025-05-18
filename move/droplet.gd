@@ -1,12 +1,16 @@
 extends Object
 class_name Droplet
 
+const MAX_ITERATIONS := 50
+
 static var movements_image: Image
 static var image: Image
 
 var position: Vector2 = Vector2.ZERO
 
 var sediment: float = 0.0
+
+var iteration := 0
 
 func _init(position: Vector2):
 	self.position = position
@@ -38,8 +42,13 @@ func move():
 		movements_image.set_pixelv(position, Color.GREEN)
 
 func update():
+	if iteration > MAX_ITERATIONS:
+		return false
+	
 	if out_of_bounds():
 		return false
+	
+	iteration += 1
 	
 	var old_position = position
 	var old_height = image.get_pixelv(old_position).r

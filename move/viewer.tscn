@@ -26,6 +26,7 @@ timer = NodePath("../Timer")
 movements = NodePath("../Movements")
 
 [node name="Movements" type="Sprite2D" parent="."]
+visible = false
 centered = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
