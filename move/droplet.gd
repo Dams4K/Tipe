@@ -29,7 +29,8 @@ func move():
 	# u = uv.x
 	# v = uv.y
 	# values between [0, 1[
-	var uv: Vector2 = Vector2(0.1, 0.1)
+	var uv: Vector2 = position - Vector2(Vector2i(position))
+	
 	var g := Vector2(
 		(Px1_y - P_x_y)/2 * (1 - uv.y) + (Px1y1 - P_xy1)/2 * uv.y,
 		(P_xy1 - P_x_y)/2 * (1 - uv.x) + (Px1y1 - Px1_y)/2 * uv.x
