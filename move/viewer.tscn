@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cyrd3ld6bnjje" path="res://move/canvas.gd" id="2_44i43"]
 
 [sub_resource type="Gradient" id="Gradient_ou7mo"]
+offsets = PackedFloat32Array(0, 0.461039, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_pr5dc"]
 gradient = SubResource("Gradient_ou7mo")
