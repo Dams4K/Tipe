@@ -11,7 +11,8 @@ var total_droplets: int = 0
 
 func _ready() -> void:
 	randomize()
-	await base_texture.changed
+	#await base_texture.changed
+	
 	var movements_image = Image.create(base_texture.get_width(), base_texture.get_height(), false, Image.FORMAT_RGBA8)
 	var movements_image_texture: ImageTexture = ImageTexture.create_from_image(movements_image)
 	
@@ -19,7 +20,7 @@ func _ready() -> void:
 	Droplet.image = base_texture.get_image()
 	movements.texture = movements_image_texture
 	
-	Droplet.generate_weights(2)
+	Droplet.generate_weights(0)
 	
 	timer.timeout.connect(update)
 	
@@ -44,7 +45,7 @@ func _input(event: InputEvent) -> void:
 				droplets.append(droplet)
 			total_droplets += N
 		elif event.keycode == KEY_S:
-			texture.get_image().save_jpg("res://results/after_%s_droplets.jpg" % total_droplets, 0.95)
+			texture.get_image().save_jpg("res://results/after_%s_droplets.jpg" % total_droplets, 1.0)
 
 func update():
 	var q = len(droplets)

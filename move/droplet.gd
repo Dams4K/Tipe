@@ -151,11 +151,28 @@ func erode(amount: float, old_position: Vector2):
 	#image.set_pixelv(old_position, Color(eroded_amount, eroded_amount, eroded_amount))
 
 func depose(amount: float, old_position: Vector2):
-	var previous_amount = image.get_pixelv(old_position).r
+	var uv: Vector2 = old_position - Vector2(Vector2i(old_position))
+	
+	var xy = Vector2i(old_position)
+	var x1y = Vector2i(old_position) + Vector2i.RIGHT
+	var xy1 = Vector2i(old_position) + Vector2i.DOWN
+	var x1y1 = Vector2i(old_position) + Vector2i.RIGHT + Vector2i.DOWN
+	
+	var xy_amount = amount * (1 - uv.x) * (1 - uv.y)
+	var x1y_amount = amount * uv.x * (1 - uv.y)
+	var xy1_amount = amount * (1 - uv.x) * uv.y
+	var x1y1_amount = amount * uv.x * uv.y
+
+	depose_pixel(xy, xy_amount)
+	depose_pixel(x1y, x1y_amount)
+	depose_pixel(xy1, xy1_amount)
+	depose_pixel(x1y1, x1y1_amount)
+
+func depose_pixel(pixel_pos: Vector2i, amount: float):
+	var previous_amount = image.get_pixelv(pixel_pos).r
 	var deposed_amount = min(1.0, previous_amount + amount)
 	sediment -= amount
-	image.set_pixelv(old_position, Color(deposed_amount, deposed_amount, deposed_amount))
-
+	image.set_pixelv(pixel_pos, Color(deposed_amount, deposed_amount, deposed_amount, 1.0))
 
 func out_of_bounds() -> bool:
 	return position.x < 0 or position.y < 0 or position.x >= image.get_width()-1 or position.y >= image.get_height()-1
