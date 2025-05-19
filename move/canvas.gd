@@ -1,10 +1,13 @@
 extends Sprite2D
 
+const N = 10_000
+
 @export var timer: Timer
 @export var movements: Sprite2D
 @export var base_texture: Texture2D
 
 var droplets: Array[Droplet] = []
+var total_droplets: int = 0
 
 func _ready() -> void:
 	randomize()
@@ -16,30 +19,32 @@ func _ready() -> void:
 	Droplet.image = base_texture.get_image()
 	movements.texture = movements_image_texture
 	
-	Droplet.generate_weights(0)
+	Droplet.generate_weights(2)
 	
-	#timer.timeout.connect(update)
+	timer.timeout.connect(update)
 	
-	for i in range(300_000):
-		var rx = randf_range(1.0, base_texture.get_width()-1.0)
-		var ry = randf_range(1.0, base_texture.get_height()-1.0)
-		var droplet = Droplet.new(Vector2(rx, ry))
-		droplets.append(droplet)
+	#for i in range(300_000):
+		#var rx = randf_range(1.0, base_texture.get_width()-1.0)
+		#var ry = randf_range(1.0, base_texture.get_height()-1.0)
+		#var droplet = Droplet.new(Vector2(rx, ry))
+		#droplets.append(droplet)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		var droplet = Droplet.new(get_local_mouse_position())
 		droplets.append(droplet)
+		total_droplets += 1
 	
-	if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed:
-		for i in range(10_000):
-			var rx = randf_range(1.0, base_texture.get_width()-1.0)
-			var ry = randf_range(1.0, base_texture.get_height()-1.0)
-			var droplet = Droplet.new(Vector2(rx, ry))
-			droplets.append(droplet)
-
-func _process(delta: float) -> void:
-	update()
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_SPACE:
+			for i in range(N):
+				var rx = randf_range(0.0, base_texture.get_width()-1.0)
+				var ry = randf_range(0.0, base_texture.get_height()-1.0)
+				var droplet = Droplet.new(Vector2(rx, ry))
+				droplets.append(droplet)
+			total_droplets += N
+		elif event.keycode == KEY_S:
+			texture.get_image().save_jpg("res://results/after_%s_droplets.jpg" % total_droplets, 0.95)
 
 func update():
 	var q = len(droplets)

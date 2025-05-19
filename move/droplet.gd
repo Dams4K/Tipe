@@ -1,7 +1,7 @@
 extends Object
 class_name Droplet
 
-const MAX_ITERATIONS := 6
+const MAX_ITERATIONS := 30000
 
 static var movements_image: Image
 static var image: Image
@@ -9,19 +9,19 @@ static var image: Image
 var position: Vector2 = Vector2.ZERO
 
 var direction: Vector2 = Vector2(0, 0)
-var inertia: float = 0.3
+var inertia: float = 0.8
 var velocity: float = 1.0
 var gravity: float = 9.8
 
-var min_slope: float = 0.5
+var min_slope: float = 0.1
 
 var sediment: float = 0.0
-var capacity: float = 0.3
+var capacity: float = 0.4
 var erosion: float = 0.03
 var deposition: float = 0.03
 
 var water: float = 0.6
-var evaporation: float = 0.005
+var evaporation: float = 0.05
 
 var radius: int = 1
 
@@ -65,9 +65,9 @@ func move():
 	if out_of_bounds():
 		return
 	
-	var P_x_y : float =  image.get_pixelv(position - Vector2.ONE).r
-	var Px1_y: float =  image.get_pixelv(position + Vector2.RIGHT + Vector2.UP).r
-	var P_xy1: float =  image.get_pixelv(position + Vector2.DOWN + Vector2.LEFT).r
+	var Pxy : float =  image.get_pixelv(position).r
+	var Px1y: float =  image.get_pixelv(position + Vector2.RIGHT).r
+	var Pxy1: float =  image.get_pixelv(position + Vector2.DOWN).r
 	var Px1y1: float = image.get_pixelv(position + Vector2.ONE).r
 	
 	# u = uv.x
@@ -76,8 +76,8 @@ func move():
 	var uv: Vector2 = position - Vector2(Vector2i(position))
 	
 	var g := Vector2(
-		(Px1_y - P_x_y)/2 * (1 - uv.y) + (Px1y1 - P_xy1)/2 * uv.y,
-		(P_xy1 - P_x_y)/2 * (1 - uv.x) + (Px1y1 - Px1_y)/2 * uv.x
+		(Px1y - Pxy) * (1 - uv.y) + (Px1y1 - Pxy1) * uv.y,
+		(Pxy1 - Pxy) * (1 - uv.x) + (Px1y1 - Px1y) * uv.x
 	)
 	
 	direction = (direction * inertia - g.normalized() * (1 - inertia)).normalized()
@@ -88,6 +88,7 @@ func move():
 
 func update():
 	if iteration > MAX_ITERATIONS:
+		die()
 		return false
 	
 	if out_of_bounds():
@@ -102,13 +103,16 @@ func update():
 	var delta_height = new_height - old_height
 	
 	if old_position == position:
+		die()
 		return false
 	
 	var carry_capacity = max(-delta_height, min_slope) * water * capacity * velocity
+	if carry_capacity < 0.001:
+		die()
+		return false
 	
-	if delta_height > 0.0:
+	if delta_height > 0.0 or sediment > carry_capacity:
 		var amount_to_depose: float = min(delta_height, sediment) if delta_height > 0 else (sediment - carry_capacity) * deposition
-		sediment -= amount_to_depose
 		depose(amount_to_depose, old_position)
 	else:
 		var amount_to_erode: float = min(-delta_height, (carry_capacity-sediment) * erosion)
@@ -121,19 +125,25 @@ func update():
 	
 	return true
 
+func die():
+	movements_image.set_pixelv(position, Color(0.0, 0.0, 0.0, 0.0))
+	depose(sediment, position)
+
 func erode(amount: float, old_position: Vector2):
 	var i_old_position := Vector2i(old_position)
 	for offset in brush_weights.keys():
-		var position := Vector2i(offset) + i_old_position
-		if position.x < 0 or position.y < 0 or position.x >= image.get_width() or position.y >= image.get_height():
+		var sub_position := Vector2i(offset) + i_old_position
+		if sub_position.x < 0 or sub_position.y < 0 or sub_position.x >= image.get_width() or sub_position.y >= image.get_height():
 			continue
 		
-		var color := image.get_pixelv(position)
-		var weighed_amount = min(amount * brush_weights[offset], color.r)
+		var previous_amount := image.get_pixelv(sub_position).r
+		var weighed_amount = amount * brush_weights[offset]
+		var delta_amount = previous_amount if previous_amount < weighed_amount else weighed_amount
 		
-		color -= Color(weighed_amount, weighed_amount, weighed_amount)
-		sediment += weighed_amount
-		image.set_pixelv(position, color)
+		sediment += delta_amount
+		
+		var new_color = Color((previous_amount - delta_amount) * Color.WHITE, 1.0)
+		image.set_pixelv(sub_position, new_color)
 	
 	#var previous_amount = image.get_pixelv(old_position).r
 	#var eroded_amount = max(0.0, previous_amount - amount)
@@ -143,9 +153,9 @@ func erode(amount: float, old_position: Vector2):
 func depose(amount: float, old_position: Vector2):
 	var previous_amount = image.get_pixelv(old_position).r
 	var deposed_amount = min(1.0, previous_amount + amount)
-	
+	sediment -= amount
 	image.set_pixelv(old_position, Color(deposed_amount, deposed_amount, deposed_amount))
 
 
 func out_of_bounds() -> bool:
-	return position.x < 1 or position.y < 1 or position.x >= image.get_width()-1 or position.y >= image.get_height()-1
+	return position.x < 0 or position.y < 0 or position.x >= image.get_width()-1 or position.y >= image.get_height()-1
