@@ -11,7 +11,7 @@ var total_droplets: int = 0
 
 func _ready() -> void:
 	randomize()
-	#await base_texture.changed
+	await base_texture.changed
 	
 	var movements_image = Image.create(base_texture.get_width(), base_texture.get_height(), false, Image.FORMAT_RGBA8)
 	var movements_image_texture: ImageTexture = ImageTexture.create_from_image(movements_image)
@@ -50,7 +50,8 @@ func _input(event: InputEvent) -> void:
 func update():
 	var q = len(droplets)
 	if q != 0:
-		print("Amount of droplets: %s" % q)
+		#print("Amount of droplets: %s" % q)
+		pass
 	
 	var droplets_alive: Array[Droplet] = []
 	for droplet: Droplet in droplets:
