@@ -16,8 +16,16 @@ func _ready() -> void:
 	var movements_image = Image.create(base_texture.get_width(), base_texture.get_height(), false, Image.FORMAT_RGBA8)
 	var movements_image_texture: ImageTexture = ImageTexture.create_from_image(movements_image)
 	
+	#var image_data = ImageData.from_image(base_texture.get_image())
+	
+	var img = base_texture.get_image()
+	var img32 := Image.create(img.get_width(), img.get_height(), false, Image.FORMAT_RGBF)
+	for i in range(img.get_width()):
+		for j in range(img.get_height()):
+			img32.set_pixel(i, j, img.get_pixel(i, j))
+	
 	Droplet.movements_image = movements_image_texture.get_image()
-	Droplet.image = base_texture.get_image()
+	Droplet.image = img32
 	movements.texture = movements_image_texture
 	
 	Droplet.generate_weights(0)

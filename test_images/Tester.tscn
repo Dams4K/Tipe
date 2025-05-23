@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://dsn45dwkyem3q"]
+
+[ext_resource type="Script" uid="uid://j4wle6s764c7" path="res://test_images/tester.gd" id="1_fwumb"]
+
+[sub_resource type="Gradient" id="Gradient_fwumb"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_jswu2"]
+gradient = SubResource("Gradient_fwumb")
+width = 12
+height = 12
+
+[node name="Tester" type="Node2D"]
+script = ExtResource("1_fwumb")
+texture = SubResource("GradientTexture2D_jswu2")
+step = 0.01
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(32, 32)

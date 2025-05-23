@@ -1,7 +1,7 @@
 extends Object
 class_name Droplet
 
-const MAX_ITERATIONS := 30000
+const MAX_ITERATIONS := 60
 
 static var movements_image: Image
 static var image: Image
@@ -16,12 +16,12 @@ var gravity: float = 0.098
 var min_slope: float = 0.0
 
 var sediment: float = 0.0
-var capacity: float = 1.0
-var erosion: float = 0.03
-var deposition: float = 0.03
+var capacity: float = 0.2
+var erosion: float = 0.1
+var deposition: float = 0.1
 
 var water: float = 1.0
-var evaporation: float = 0.001
+var evaporation: float = 0.01
 
 var radius: int = 1
 
@@ -100,7 +100,6 @@ func update():
 	debug(old_position)
 	
 	if out_of_bounds():
-		print("OOB")
 		position = old_position
 		die()
 		return false
@@ -116,7 +115,7 @@ func update():
 	var carry_capacity = max(-delta_height, min_slope) * water * capacity * velocity
 	if delta_height > 0.0 or sediment > carry_capacity:
 		var amount_to_depose: float = min(delta_height, sediment) if delta_height > 0 else (sediment - carry_capacity) * deposition
-		prints("D:", amount_to_depose)
+		#prints("D:", amount_to_depose)
 		depose(amount_to_depose, old_position)
 	else:
 		var amount_to_erode: float = min(-delta_height, (carry_capacity-sediment) * erosion)
@@ -135,11 +134,11 @@ func debug(old_position):
 	var xy1 = Vector2i(0, 1)
 	var x1y1 = Vector2i(1, 1)
 	#print()
-	printt(image.get_pixelv(xy).r + image.get_pixelv(x1y).r + image.get_pixelv(xy1).r + image.get_pixelv(x1y1).r + sediment, image.get_pixelv(xy).r, image.get_pixelv(x1y).r, image.get_pixelv(xy1).r, image.get_pixelv(x1y1).r, sediment)
+	#printt(image.get_pixelv(xy).r + image.get_pixelv(x1y).r + image.get_pixelv(xy1).r + image.get_pixelv(x1y1).r + sediment, image.get_pixelv(xy).r, image.get_pixelv(x1y).r, image.get_pixelv(xy1).r, image.get_pixelv(x1y1).r, sediment)
 	#print("----")
 
 func die():
-	prints("Die:", sediment)
+	#prints("Die:", sediment)
 	movements_image.set_pixelv(position, Color(0.0, 0.0, 0.0, 0.0))
 	depose(sediment, position)
 
