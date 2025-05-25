@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wsj41xrnsm0s"
-path="res://.godot/imported/after_0_droplets.jpg-4795528e1b1061386e7a1e0e5b0af45a.ctex"
+uid="uid://7myrpg5w5rd3"
+path="res://.godot/imported/after_120000_droplets.jpg-0132bde1dfc9c68be4b730b10d03d329.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://results/after_0_droplets.jpg"
-dest_files=["res://.godot/imported/after_0_droplets.jpg-4795528e1b1061386e7a1e0e5b0af45a.ctex"]
+source_file="res://results/Old/Radius 1/after_120000_droplets.jpg"
+dest_files=["res://.godot/imported/after_120000_droplets.jpg-0132bde1dfc9c68be4b730b10d03d329.ctex"]
 
 [params]
 

@@ -4,7 +4,8 @@
 [ext_resource type="Script" uid="uid://cyrd3ld6bnjje" path="res://move/canvas.gd" id="2_44i43"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_44i43"]
-frequency = 0.006
+seed = 1
+frequency = 0.004
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_47aj1"]
 width = 256
@@ -15,19 +16,19 @@ noise = SubResource("FastNoiseLite_44i43")
 script = ExtResource("1_pr5dc")
 
 [node name="Canvas" type="Sprite2D" parent="." node_paths=PackedStringArray("timer", "movements")]
+texture = SubResource("NoiseTexture2D_47aj1")
 centered = false
 script = ExtResource("2_44i43")
 timer = NodePath("../Timer")
 movements = NodePath("../Movements")
-base_texture = SubResource("NoiseTexture2D_47aj1")
 
 [node name="Movements" type="Sprite2D" parent="."]
+visible = false
 centered = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
-zoom = Vector2(3, 3)
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 0.1
+wait_time = 0.001
 autostart = true

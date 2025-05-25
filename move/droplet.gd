@@ -13,15 +13,15 @@ var inertia: float = 0.1
 var velocity: float = 1.0
 var gravity: float = 0.098
 
-var min_slope: float = 0.0
+var min_slope: float = 0.01
 
 var sediment: float = 0.0
-var capacity: float = 0.2
-var erosion: float = 0.1
-var deposition: float = 0.1
+var capacity: float = 3.0
+var erosion: float = 0.03
+var deposition: float = 0.03
 
 var water: float = 1.0
-var evaporation: float = 0.01
+var evaporation: float = 0.1
 
 var radius: int = 1
 
@@ -164,26 +164,24 @@ func erode(amount: float, old_position: Vector2):
 	#image.set_pixelv(old_position, Color(eroded_amount, eroded_amount, eroded_amount))
 
 func depose(amount: float, old_position: Vector2):
-	depose_pixel(old_position, amount)
+	#depose_pixel(old_position, amount)
 	
-	#var uv: Vector2 = old_position - Vector2(Vector2i(old_position))
-	#
-	#var xy = Vector2i(old_position)
-	#var x1y = Vector2i(old_position) + Vector2i.RIGHT
-	#var xy1 = Vector2i(old_position) + Vector2i.DOWN
-	#var x1y1 = Vector2i(old_position) + Vector2i.RIGHT + Vector2i.DOWN
-	#
-	#print(xy)
-	#
-	#var xy_amount = amount * (1 - uv.x) * (1 - uv.y)
-	#var x1y_amount = amount * uv.x * (1 - uv.y)
-	#var xy1_amount = amount * (1 - uv.x) * uv.y
-	#var x1y1_amount = amount * uv.x * uv.y
-#
-	#depose_pixel(xy, xy_amount)
-	#depose_pixel(x1y, x1y_amount)
-	#depose_pixel(xy1, xy1_amount)
-	#depose_pixel(x1y1, x1y1_amount)
+	var uv: Vector2 = old_position - Vector2(Vector2i(old_position))
+	
+	var xy = Vector2i(old_position)
+	var x1y = Vector2i(old_position) + Vector2i.RIGHT
+	var xy1 = Vector2i(old_position) + Vector2i.DOWN
+	var x1y1 = Vector2i(old_position) + Vector2i.RIGHT + Vector2i.DOWN
+	
+	var xy_amount = amount * (1 - uv.x) * (1 - uv.y)
+	var x1y_amount = amount * uv.x * (1 - uv.y)
+	var xy1_amount = amount * (1 - uv.x) * uv.y
+	var x1y1_amount = amount * uv.x * uv.y
+
+	depose_pixel(xy, xy_amount)
+	depose_pixel(x1y, x1y_amount)
+	depose_pixel(xy1, xy1_amount)
+	depose_pixel(x1y1, x1y1_amount)
 
 func depose_pixel(pixel_pos: Vector2i, amount: float):
 	var previous_amount = image.get_pixelv(pixel_pos).r

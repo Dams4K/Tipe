@@ -4,7 +4,7 @@ const N = 10_000
 
 @export var timer: Timer
 @export var movements: Sprite2D
-@export var base_texture: Texture2D
+@onready var base_texture: Texture2D = texture
 
 var droplets: Array[Droplet] = []
 var total_droplets: int = 0
@@ -28,15 +28,24 @@ func _ready() -> void:
 	Droplet.image = img32
 	movements.texture = movements_image_texture
 	
-	Droplet.generate_weights(0)
+	Droplet.generate_weights(2)
 	
-	timer.timeout.connect(update)
+	#timer.timeout.connect(update)
 	
 	#for i in range(300_000):
 		#var rx = randf_range(1.0, base_texture.get_width()-1.0)
 		#var ry = randf_range(1.0, base_texture.get_height()-1.0)
 		#var droplet = Droplet.new(Vector2(rx, ry))
 		#droplets.append(droplet)
+
+func _process(delta: float) -> void:
+	update()
+	for i in range(droplets.size(), 10_000):
+		var rx = randf_range(0.0, base_texture.get_width()-1.0)
+		var ry = randf_range(0.0, base_texture.get_height()-1.0)
+		var droplet = Droplet.new(Vector2(rx, ry))
+		droplets.append(droplet)
+		total_droplets += 1
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:

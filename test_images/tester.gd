@@ -16,8 +16,8 @@ func _ready() -> void:
 	img.set_data(img.get_width(), img.get_height(), false, Image.FORMAT_RF, img.get_data())
 
 func _process(delta: float) -> void:
-	if img.get_pixelv(pos).r != value:
-		printt("Dif", img.get_pixelv(pos).r, value)
+	#if img.get_pixelv(pos).r != value:
+	printt(img.get_pixelv(pos).r, value)
 	
 	value -= step
 	img.set_pixelv(pos, Color(value, value, value, 1.0))
