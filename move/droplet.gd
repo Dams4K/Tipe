@@ -122,8 +122,6 @@ func update():
 		erode(amount_to_erode, old_position)
 	
 	velocity = sqrt(max(0, velocity**2 - delta_height * gravity))
-	if velocity == NAN:
-		print("NAN")
 	water *= (1 - evaporation)
 	
 	return true

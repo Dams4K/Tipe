@@ -3,22 +3,28 @@ shader_type spatial;
 
 uniform float max_height = 1.0;
 uniform sampler2D height_map: hint_default_black, filter_nearest;
-uniform vec2 offset = vec2(0.0, 0.0);
-uniform vec2 resolution = vec2(16.0, 16.0);
 
-float getHeight(vec2 uv) {
-	return textureLod(height_map, uv, 0).y * max_height;
+float getHeight(vec2 vertex) {
+	ivec2 size = textureSize(height_map, 0);
+
+	vec2 position = (vertex + vec2(size)/2.0) / vec2(size);
+	return textureLod(height_map, position, 0).y * max_height;
 }
+
 void vertex() {
+	float c_height = getHeight(VERTEX.xz);
+	VERTEX.y = c_height;
 
-	vec2 vertex_step = vec2(1.0) / resolution;
+	vec3 C = vec3(VERTEX.x, c_height, VERTEX.z);
+	vec3 B = vec3(VERTEX.x+1.0, 0.0, VERTEX.z);
+	B.y = getHeight(B.xz);
+	vec3 A = vec3(VERTEX.x+1.0, 0.0, VERTEX.z+1.0);
+	A.y = getHeight(A.xz);
 
-	vec3 b = vec3(UV.x + offset.x, getHeight(UV + offset), UV.y + offset.y);
-	vec3 a = vec3(UV.x + vertex_step.x + offset.x, getHeight(UV + vec2(vertex_step.x, 0.0) + offset), UV.y + offset.y);
-	vec3 c = vec3(UV.x + offset.x, getHeight(UV + vec2(0.0, vertex_step.x) + offset), UV.y + vertex_step.y + offset.y);
+	NORMAL = normalize(cross(B - A, C - A));
+}
 
-	float height = getHeight(VERTEX.xy * vertex_step + vec2(0.5));
-	VERTEX.y = height;
-
-	NORMAL = normalize(cross(b - a, c - a));
+void fragment() {
+	//ALBEDO = vec3(getHeight(UV + offset));
+	//ALBEDO = vec3(VERTEX.xy, 1.0);
 }

@@ -28,9 +28,9 @@ func _ready() -> void:
 	Droplet.image = img32
 	movements.texture = movements_image_texture
 	
-	Droplet.generate_weights(2)
+	Droplet.generate_weights(1)
 	
-	#timer.timeout.connect(update)
+	timer.timeout.connect(update)
 	
 	#for i in range(300_000):
 		#var rx = randf_range(1.0, base_texture.get_width()-1.0)

@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://bim054icgboai"]
+
+[ext_resource type="Shader" uid="uid://btr1svgcs2qj5" path="res://heightmap/heightmap.gdshader" id="1_08hx1"]
+[ext_resource type="Texture2D" uid="uid://cli7464s53g20" path="res://results/256/after_300002_droplets.jpg" id="2_pbo7a"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_08hx1")
+shader_parameter/max_height = 64.0
+shader_parameter/height_map = ExtResource("2_pbo7a")
